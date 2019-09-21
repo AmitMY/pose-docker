@@ -125,8 +125,6 @@ class HandDetector(object):
         assert test_img.shape == (self.input_size, self.input_size, 3)
 
         with tf.device(self.tf_device):
-            # cv2.imwrite('test_imgs/2piano.png', test_img_resize) # TODO use temporary file instead
-
             if self.color_channel == 'GRAY':
                 test_img = np.dot(test_img[..., :3], [0.299, 0.587, 0.114]).reshape(
                     (self.input_size, self.input_size, 1))
@@ -156,7 +154,6 @@ class HandDetector(object):
             test_img = cpm_utils.read_image(input_test_img, [], self.input_size, 'IMAGE')
 
             test_img_resize = cv2.resize(test_img, (self.input_size, self.input_size))
-            # cv2.imwrite('test_imgs/2piano.png', test_img_resize) # TODO use temporary file instead
 
             if self.color_channel == 'GRAY':
                 test_img_resize = np.dot(test_img_resize[..., :3], [0.299, 0.587, 0.114]).reshape(
