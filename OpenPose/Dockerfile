@@ -31,9 +31,11 @@ RUN sed -i 's/execute_process(COMMAND git checkout master WORKING_DIRECTORY ${CM
 RUN cd openpose && git pull origin master
 
 # compiling OpenPose with cmake
-RUN cd openpose && mkdir build && cd build && cmake ..
+RUN cd openpose && mkdir build && cd build && cmake -DBUILD_PYTHON=ON ..
 RUN cd openpose/build && make -j `nproc`
 RUN cd openpose/models && ./getModels.sh
+
+RUN pip3 install opencv-python
 
 RUN mkdir workspace
 WORKDIR workspace
@@ -41,8 +43,9 @@ WORKDIR workspace
 # nvidia-docker build -t "openpose" .
 
 
-# nvidia-docker run -it --rm  openpose
+# nvidia-docker run -it --rm -v /home/nlp/amit/pose/OpenPose/api:/workspace/api -v /home/nlp/amit/pose/assets:/workspace/assets -v /home/nlp/amit/pose/output:/workspace/out openpose
 
 # wget http://www.handspeak.com/word/c/ceramic-fs.mp4
-# ./openpose.bin --video ceramic-fs.mp4 --write_video out.avi --hand --face --disable_blending
-# ./build/examples/openpose/openpose.bin --display 0 --video ceramic-fs.mp4  --hand --face --disable_blending --write_video out.avi -write_json out
+
+
+# python3 api/hand.py --input assets/hands --output out -f image

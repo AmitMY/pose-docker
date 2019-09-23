@@ -15,5 +15,5 @@ COPY api/ /workspace/pose/api
 # docker build -t "cpm" .
 
 # nvidia-docker run -it --rm -v /home/nlp/amit/pose/CPM/api:/workspace/pose/api -v /home/nlp/amit/pose/assets:/workspace/pose/assets -v /home/nlp/amit/pose/output:/workspace/pose/out cpm
+# python api/hand.py --input assets/hands --output out -f image
 
-# python api/hand.py --input assets/hands --output out --device cpu -f image
