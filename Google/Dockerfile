@@ -1,4 +1,4 @@
-FROM python:3.7.1-stretch
+FROM python:3.7.4-stretch
 
 RUN apt-get update -y && apt-get upgrade -y
 RUN apt-get install sudo git wget build-essential unzip -y
@@ -13,6 +13,7 @@ RUN git clone https://github.com/tensorflow/tensorflow.git
 WORKDIR /tensorflow
 RUN git fetch origin tag v1.13.2
 RUN git checkout v1.13.2
+ENV TF_NEED_CUDA=0
 
 # Copy the custom module from mediapipe to tensorflow
 RUN mkdir /tensorflow/tensorflow/lite/python/custom_ops/
@@ -21,14 +22,18 @@ RUN sed -i 's/mediapipe:__subpackages__/visibility:public/g' /tensorflow/tensorf
 RUN sed -i 's/@org_tensorflow//g' /tensorflow/tensorflow/lite/python/custom_ops/BUILD
 
 # Install Bazel
-RUN wget https://github.com/bazelbuild/bazel/releases/download/0.21.0/bazel-0.21.0-installer-linux-x86_64.sh
-RUN chmod +x bazel-0.21.0-installer-linux-x86_64.sh
-RUN ./bazel-0.21.0-installer-linux-x86_64.sh
+ARG BAZEL_VERSION=0.21.0
+RUN mkdir /bazel
+RUN wget --no-check-certificate -O /bazel/installer.sh "https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel-${BAZEL_VERSION}-installer-linux-x86_64.sh"
+RUN chmod +x /bazel/installer.sh
+RUN /bazel/installer.sh
+RUN rm -f /bazel/installer.sh
 
-# Removed
+# Configure and build
+RUN yes '' | ./configure
 RUN bazel build --action_env PATH="$PATH" --noincompatible_strict_action_env --config=opt --incompatible_disable_deprecated_attr_params=false //tensorflow/tools/pip_package:build_pip_package
 # Buid pip package
-RUN ./bazel-bin/tensorflow/tools/pip_package/build_pip_package
+RUN ./bazel-bin/tensorflow/tools/pip_package/build_pip_package ./tensorflow_pkg
 
 WORKDIR hand_tracking
 
