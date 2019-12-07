@@ -37,6 +37,8 @@ RUN cd openpose/models && ./getModels.sh
 
 RUN pip3 install opencv-python
 
+RUN mkdir /out
+
 RUN mkdir workspace
 WORKDIR workspace
 
@@ -49,3 +51,5 @@ WORKDIR workspace
 
 
 # python3 api/hand.py --input assets/hands --output out -f image
+
+# ! cd openpose && ./build/examples/openpose/openpose.bin --video ../between.mp4  --display 0 --write_json out/ --hand --face --num_gpu 4 # --write_video /out.avi
