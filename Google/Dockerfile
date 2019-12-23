@@ -29,12 +29,24 @@ RUN chmod +x /bazel/installer.sh
 RUN /bazel/installer.sh
 RUN rm -f /bazel/installer.sh
 
+# Intall pip dependencies
+RUN pip install -U --user pip six numpy wheel setuptools mock 'future>=0.17.1'
+RUN pip install -U --user keras_applications --no-deps
+RUN pip install -U --user keras_preprocessing --no-deps
+RUN pip install matplotlib
+
 # Configure and build
 RUN yes '' | ./configure
 RUN bazel build --action_env PATH="$PATH" --noincompatible_strict_action_env --config=opt --incompatible_disable_deprecated_attr_params=false //tensorflow/tools/pip_package:build_pip_package
 # Buid pip package
 RUN ./bazel-bin/tensorflow/tools/pip_package/build_pip_package ./tensorflow_pkg
+# Install pip package
+RUN pip install /tensorflow/tensorflow_pkg/tensorflow-1.13.2-cp37-cp37m-linux_x86_64.whl
 
-WORKDIR hand_tracking
+# Download the models
+WORKDIR /hand_tracking
+RUN mkdir models
+RUN curl --header 'Host: raw.githubusercontent.com' --user-agent 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:69.0) Gecko/20100101 Firefox/69.0' --header 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' --header 'Accept-Language: en-US,en;q=0.5' --referer 'https://github.com/google/mediapipe/blob/master/mediapipe/models/palm_detection.tflite' --header 'Upgrade-Insecure-Requests: 1' 'https://raw.githubusercontent.com/google/mediapipe/master/mediapipe/models/palm_detection.tflite' --output './models/palm_detection.tflite'
+RUN curl --header 'Host: raw.githubusercontent.com' --user-agent 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:69.0) Gecko/20100101 Firefox/69.0' --header 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' --header 'Accept-Language: en-US,en;q=0.5' --referer 'https://github.com/google/mediapipe/blob/master/mediapipe/models/hand_landmark.tflite' --header 'Upgrade-Insecure-Requests: 1' 'https://raw.githubusercontent.com/google/mediapipe/master/mediapipe/models/hand_landmark.tflite' --output './models/hand_landmark.tflite'
 
 # docker build -t "google-pose" .
