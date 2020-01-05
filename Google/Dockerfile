@@ -20,9 +20,9 @@ COPY api/ /api
 # Create output directory
 RUN mkdir /out
 
-CMD /bin/bash
+CMD python /api/pose_video.py
 
 
 
 # docker build -t "google-pose" ~/pose/Google/
-# docker run -it --rm -v /home/nlp/amit/somevideo.mp4:/video.mp4 google-pose /bin/bash
+# docker run -it --rm -v /home/nlp/amit/PhD/meta-scholar/utils/../datasets/SLCrawl/versions/SpreadTheSign/videos/20259_lt-lt_0.mp4:/video.mp4 google-pose /bin/bash
