@@ -1,6 +1,7 @@
 import json
 import imageio
 import sys
+import numpy as np
 
 sys.path.append("/api")
 from pose_util import hand_from_raw
@@ -19,7 +20,13 @@ counter = 0
 
 for i, img in enumerate(reader):
     counter += 1
-    hands = detector(img)
+    if img.shape[0] == 256 and img.shape[1] == 256:
+        print("Skipping hand detection")
+        hands = [{"bbox": np.array([(0, 256), (256, 256), (256, 0), (0, 0)])}]
+        hands = [detector.get_landmarks(img, h) for h in hands]
+    else:
+        hands = detector(img)
+
     clear_hands = [hand_from_raw(hand["joints"]) for hand in hands]
     name = str(i).zfill(5)
     json.dump(clear_hands, open("/out/" + name + ".json", "w"))

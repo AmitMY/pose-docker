@@ -16,7 +16,6 @@ RUN git checkout multihand
 # Add API
 COPY api/ /api
 
-
 # Create output directory
 RUN mkdir /out
 
